@@ -1,5 +1,6 @@
 package com.example.demo.service;
 
+import java.util.HashSet;
 import java.util.List;
 
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -10,6 +11,7 @@ import com.example.demo.dto.request.UserCreationRequest;
 import com.example.demo.dto.request.UserUpdateRequest;
 import com.example.demo.dto.response.UserResponse;
 import com.example.demo.entity.User;
+import com.example.demo.enums.Role;
 import com.example.demo.exception.AppException;
 import com.example.demo.exception.ErrorCode;
 import com.example.demo.mapper.UserMapper;
@@ -22,11 +24,13 @@ import lombok.experimental.FieldDefaults;
 @RequiredArgsConstructor
 @FieldDefaults(level = lombok.AccessLevel.PRIVATE, makeFinal = true)
 public class UserService {
+    //khai báo repository và mapper
     UserRepository userRepository;
     UserMapper userMapper;
+    PasswordEncoder passwordEncoder;
 
-
-    public User createRequest(UserCreationRequest request) {
+    // Phương thức tạo người dùng mới
+    public UserResponse createUser(UserCreationRequest request) {
         if(userRepository.existsByName(request.getName())) {
             throw new AppException(ErrorCode.USER_EXISTED);
         }
@@ -34,15 +38,20 @@ public class UserService {
         //Map request vào user entity
         User user = userMapper.toUser(request);
         //Encrypt password
-        PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
         user.setPassword(passwordEncoder.encode(request.getPassword()));
-        return userRepository.save(user);
-    }
 
-    public List<User> getAllUsers(){
-        return userRepository.findAll();
+        HashSet<String> roles = new HashSet<>();
+        roles.add(Role.USER.name());
+        user.setRoles(roles);
+         
+        user =  userRepository.save(user);
+        return userMapper.toUserResponse(user);
     }
-
+    // Phương thức lấy danh sách tất cả người dùng
+    public List<UserResponse> getAllUsers(){
+        return userRepository.findAll().stream().map(userMapper::toUserResponse).toList();
+    }
+    // Phương thức lấy thông tin người dùng theo ID
     public UserResponse getUserById(String id){
         return userMapper.toUserResponse(userRepository.findById(id)
             .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND)));

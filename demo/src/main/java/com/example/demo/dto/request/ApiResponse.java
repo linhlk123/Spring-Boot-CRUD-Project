@@ -9,7 +9,9 @@ import lombok.Builder;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @Builder
 public class ApiResponse<T> {
-    private int code = 1000;
+    // Mã trạng thái của phản hồi, mặc định là 200 (thành công)
+    @Builder.Default
+    private int code = 200;
     private String message;
     private T result;
 

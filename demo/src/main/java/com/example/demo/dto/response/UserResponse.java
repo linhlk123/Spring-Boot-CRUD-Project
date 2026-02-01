@@ -1,4 +1,6 @@
 package com.example.demo.dto.response;
+import java.util.Set;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -17,5 +19,5 @@ public class UserResponse {
     String firstName;
     String lastName;
     String dob;
-
+    Set<String> roles;
 }
