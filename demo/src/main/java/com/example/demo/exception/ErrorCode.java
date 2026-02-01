@@ -1,6 +1,7 @@
 package com.example.demo.exception;
 
 public enum ErrorCode {
+    // Mã lỗi và thông điệp tương ứng
     USER_EXISTED(1001, "User already existed"),
     USER_NOT_FOUND(1002, "User not found"),
     INVALID_REQUEST(1003, "Invalid request data"),
@@ -12,7 +13,7 @@ public enum ErrorCode {
     SUCCESSFUL(200, "Success");
     private int code;
     private String message;
-
+    
     //constructor
     ErrorCode(int code, String message) {
         this.code = code;
